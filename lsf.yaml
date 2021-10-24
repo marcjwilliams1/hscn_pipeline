@@ -1,0 +1,5 @@
+__default__:
+  - "-W 4:0"
+
+inferhaps:
+  - "-W 72:0"

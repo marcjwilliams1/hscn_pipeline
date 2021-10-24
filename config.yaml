@@ -1,0 +1,114 @@
+bamdir: "testdata/"
+samplemetadata: "metadata/samples.csv"
+classifier_training_data: "/juno/work/shah/reference/singlecellpipeline/human/classifier_training_data.h5"
+reference_gc: /juno/work/shah/reference/singlecellpipeline/human/reference_gc_grch37.csv
+
+infer_haps_singularity: /work/shah/isabl_software/singularity_sifs/scp/scp_infer_count_haps_v0_8_9.sif
+
+refdir: /juno/work/shah/reference/singlecellpipeline
+thousand_genomes_snps: /juno/work/shah/reference/singlecellpipeline/human/thousand_genomes_snps.tsv
+ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+
+mappability:
+  local_path: /juno/work/shah/reference/singlecellpipeline/human/wgEncodeCrgMapabilityAlign50mer.bigWig
+  url: http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/release3/wgEncodeCrgMapabilityAlign50mer.bigWig
+
+bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GRCh37-lite.bw"
+
+hmmcopy:
+  bin_size: 500000
+  chromosomes:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  - '11'
+  - '12'
+  - '13'
+  - '14'
+  - '15'
+  - '16'
+  - '17'
+  - '18'
+  - '19'
+  - '20'
+  - '21'
+  - '22'
+  - X
+  - Y
+  docker:
+    hmmcopy: hmmcopy:v0.0.6
+    single_cell_pipeline: single_cell_pipeline:v0.6.41
+  e: 0.999999
+  eta: 50000
+  exclude_list: /juno/work/shah/reference/singlecellpipeline/human/repeats.satellite.regions
+  g: 3
+  gc_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.gc.ws_500000.wig
+  good_cells:
+  - - median_hmmcopy_reads_per_bin
+    - ge
+    - 50
+  - - is_contaminated
+    - in
+    - - 'False'
+      - 'false'
+      - false
+  igv_segs_quality_threshold: 0.75
+  kappa: "100,100,700,100,25,25,25,25,25,25,25,25"
+  lambda: 20
+  m: "0,1,2,3,4,5,6,7,8,9,10,11"
+  map_cutoff: 0.9
+  map_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.map.ws_125_to_500000.wig
+  memory:
+    med: 6
+  min_mqual: 20
+  mu: "0,1,2,3,4,5,6,7,8,9,10,11"
+  multipliers: "1,2,3,4,5,6"
+  nu: 2.1
+  num_states: 12
+  ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+  s: 1
+  smoothing_function: modal
+  strength: 1000
+
+infer_haps:
+  chromosomes:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  - '11'
+  - '12'
+  - '13'
+  - '14'
+  - '15'
+  - '16'
+  - '17'
+  - '18'
+  - '19'
+  - '20'
+  - '21'
+  - '22'
+  - X
+  - Y
+  extract_seqdata:
+    genome_fai_template: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa.fai
+    genome_fasta_template: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+  max_cores: null
+  memory:
+    high: 16
+    low: 4
+    med: 6
+  ref_data_dir: /juno/work/shah/reference/singlecellpipeline/human/
