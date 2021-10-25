@@ -3,26 +3,31 @@ import pandas as pd
 configfile: "config.yaml"
 CELL_IDS, = glob_wildcards(config["bamdir"] + "{id}.bam")
 metadata = pd.read_csv(config["samplemetadata"])
-samples = metadata["samples"].to_list().unique()
+
+#seperate out normal bam file from tumor cells
+metadata_normal = metadata[metadata["normal"] == "T"]
+metadata = metadata[metadata["normal"] == "F"]
+samples = metadata["sample"].unique()
 
 
 rule all:
     input:
-        "results/hmmcopy_results/metrics.csv.gz",
-        "results/hmmcopy_results/reads.csv.gz",
-        "results/inferhaps/haplotypes.csv.gz"
+        expand("results/{sample}/hmmcopy_results/metrics.csv.gz", sample = samples),
+        expand("results/{sample}/hmmcopy_results/reads.csv.gz", sample = samples),
+        expand("results/{sample}/counthaps/allele_counts_perblock.csv.gz", sample = samples)
+        #"results/inferhaps/haplotypes.csv.gz"
 
 def getbamfile(wildcards):
-    x = samples[samples["cell_id"] == wildcards.cell_id]
+    x = metadata[metadata["cell_id"] == wildcards.cell_id]
     x = x[x["sample"] == wildcards.sample]
-    return x["bamfiles"][0]
+    return x["bamfiles"]
 
 rule read_counter:
-    input: "testdata/{cell_id}.bam"
+    input: getbamfile
     output: 
-        mydir = directory("results/read_counts/{cell_id}/"),
-        file1 = "results/read_counts/{cell_id}/test.txt",
-        file2 = "results/read_counts/{cell_id}/wig.txt",
+        mydir = directory("results/{sample}/read_counts/{cell_id}/"),
+        file1 = "results/{sample}/read_counts/{cell_id}/test.txt",
+        file2 = "results/{sample}/read_counts/{cell_id}/wig.txt",
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
@@ -39,8 +44,8 @@ rule read_counter:
         """
 
 rule correct_read_counts:
-    input: "results/read_counts/{cell_id}/wig.txt"
-    output: "results/corrected_read_counts/{cell_id}.csv"
+    input: "results/{sample}/read_counts/{cell_id}/wig.txt"
+    output: "results/{sample}/corrected_read_counts/{cell_id}.csv"
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
@@ -54,11 +59,11 @@ rule correct_read_counts:
         """
 
 rule runhmmcopy:
-    input: "results/corrected_read_counts/{cell_id}.csv"
+    input: "results/{sample}/corrected_read_counts/{cell_id}.csv"
     output: 
-        celldir = temp(directory("results/hmmcopy_results_temp/{cell_id}/")),
-        reads = temp("results/hmmcopy_results_temp/{cell_id}/0/reads.csv"),
-        metrics = temp("results/hmmcopy_results_temp/{cell_id}/0/metrics.csv"),
+        celldir = temp(directory("results/{sample}/hmmcopy_results_temp/{cell_id}/")),
+        reads = temp("results/{sample}/hmmcopy_results_temp/{cell_id}/0/reads.csv"),
+        metrics = temp("results/{sample}/hmmcopy_results_temp/{cell_id}/0/metrics.csv"),
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
@@ -96,10 +101,10 @@ rule runhmmcopy:
 
 rule mvhmmcopy:
     input:
-        reads = "results/hmmcopy_results_temp/{cell_id}/0/reads.csv",
-        celldir = "results/hmmcopy_results_temp/{cell_id}/",
+        reads = "results/{sample}/hmmcopy_results_temp/{cell_id}/0/reads.csv",
+        celldir = "results/{sample}/hmmcopy_results_temp/{cell_id}/",
     output:
-        reads = "results/hmmcopy_results/percell/{cell_id}_reads.csv",
+        reads = "results/{sample}/hmmcopy_results/percell/{cell_id}_reads.csv",
     shell:
         """
         mv {input.reads} {output.reads}
@@ -107,12 +112,12 @@ rule mvhmmcopy:
 
 rule add_metrics:
     input: 
-        metrics = "results/hmmcopy_results_temp/{cell_id}/0/metrics.csv",
-        insrt = "results/stats/{cell_id}.isize.txt",
-        flgstat = "results/stats/{cell_id}.bam.flagstat",
-        celldir = "results/hmmcopy_results_temp/{cell_id}/"
+        metrics = "results/{sample}/hmmcopy_results_temp/{cell_id}/0/metrics.csv",
+        insrt = "results/{sample}/stats/{cell_id}.isize.txt",
+        flgstat = "results/{sample}/stats/{cell_id}.bam.flagstat",
+        celldir = "results/{sample}/hmmcopy_results_temp/{cell_id}/"
     output:
-        metrics = "results/hmmcopy_results/percell/{cell_id}_metrics.csv"
+        metrics = "results/{sample}/hmmcopy_results/percell/{cell_id}_metrics.csv"
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
@@ -122,10 +127,10 @@ rule add_metrics:
 
 rule insert_size:
     input:
-        "testdata/{cell_id}.bam"
+        getbamfile
     output:
-        txt="results/stats/{cell_id}.isize.txt",
-        pdf="results/stats/{cell_id}.isize.pdf"
+        txt="results/{sample}/stats/{cell_id}.isize.txt",
+        pdf="results/{sample}/stats/{cell_id}.isize.pdf"
     params:
         # optional parameters (e.g. relax checks as below)
         "VALIDATION_STRINGENCY=LENIENT "
@@ -143,9 +148,9 @@ rule insert_size:
 rule alignment_summary:
     input:        
         ref=config["ref_genome"],
-        bam="testdata/{cell_id}.bam"
+        bam=getbamfile
     output:
-        "results/stats/{cell_id}.summary.txt"
+        "results/{sample}/stats/{cell_id}.summary.txt"
     params:
         # optional parameters (e.g. relax checks as below)
         "VALIDATION_STRINGENCY=LENIENT "
@@ -162,16 +167,21 @@ rule alignment_summary:
 
 rule samtools_flagstat:
     input:
-        "testdata/{cell_id}.bam"
+        getbamfile
     output:
-        "results/stats/{cell_id}.bam.flagstat"
+        "results/{sample}/stats/{cell_id}.bam.flagstat"
     wrapper:
         "0.78.0/bio/samtools/flagstat"
 
 
+def allreadsfile(wildcards):
+    sample = metadata[metadata['sample'] == wildcards.sample]
+    x = expand("results/{{sample}}/hmmcopy_results/percell/{cell_id}_reads.csv", cell_id = sample["cell_id"])
+    return x
+
 rule mergereads:
     input: 
-        expand("results/hmmcopy_results/percell/{cell_id}_reads.csv", cell_id = CELL_IDS)
+        allreadsfile
     output:
         merged = "results/{sample}/hmmcopy_results/reads.csv.gz"
     run:
@@ -183,9 +193,15 @@ rule mergereads:
         dist = pd.concat(dist_list, ignore_index=True)
         dist.to_csv(output.merged, sep=',')
 
+def allmetricsfile(wildcards):
+    sample = metadata[metadata['sample'] == wildcards.sample]
+    x = expand("results/{{sample}}/hmmcopy_results/percell/{cell_id}_metrics.csv", cell_id = sample["cell_id"])
+    return x
+
+
 rule mergemetrics:
     input: 
-        expand("results/hmmcopy_results/percell/{cell_id}_metrics.csv", cell_id = CELL_IDS)
+        allmetricsfile
     output:
         merged = "results/{sample}/hmmcopy_results/metrics.csv.gz"
     run:
@@ -197,9 +213,13 @@ rule mergemetrics:
         dist = pd.concat(dist_list, ignore_index=True)
         dist.to_csv(output.merged, sep=',')
 
+def getnormalbam(wildcards):
+    x = metadata[metadata_normal["sample"] == wildcards.sample]
+    return x["bamfiles"]
+
 rule create_yaml_normal_inferhaps:
-    input: "testdata/OV2295_normal.bam"
-    output: temp("results/infer_haps.yaml")
+    input: getnormalbam
+    output: temp("results/{sample}/infer_haps.yaml")
     shell:
         """
         printf "normal:\n  bam: {input[0]}" > {output[0]}
@@ -207,11 +227,11 @@ rule create_yaml_normal_inferhaps:
 
 rule inferhaps:
     input:
-        yaml = "results/infer_haps.yaml",
+        yaml = "results/{sample}/infer_haps.yaml",
     output:
-        inferhapsdir = directory("results/inferhaps/"),
-        haplotypes = "results/inferhaps/haplotypes.csv.gz",
-        pipelinedir = temp(directory("results/inferhaps/pipeline/")),
+        inferhapsdir = directory("results/{sample}/inferhaps/"),
+        haplotypes = "results/{sample}/inferhaps/haplotypes.csv.gz",
+        pipelinedir = temp(directory("results/{sample}/inferhaps/pipeline/")),
     params:
         config = "config.yaml",
         singularity = config["infer_haps_singularity"]
@@ -220,9 +240,6 @@ rule inferhaps:
         mem_mb=1024 * 4
     shell:
         """
-        echo {output}
-        echo {input}
-        echo {params}
         module load singularity
         export LSF_SERVERDIR=/admin/lsfjuno/lsf/10.1/linux3.10-glibc2.17-x86_64/etc 
         export PATH=/common/juno/OS7/10.1/linux3.10-glibc2.17-x86_64/bin:$PATH 
@@ -240,5 +257,76 @@ rule inferhaps:
             --out_dir {output.inferhapsdir}
         """
 
-#cellsnp-lite -s testdata/SA1090-A96213A-R20-C06.bam,testdata/SA1090-A96213A-R20-C08.bam -I SA1090-A96213A-R20-C06,SA1090-A96213A-R20-C08 -O cellsnptest -R haps.vcf -p 1 --cellTAG None --UMItag None --gzip --minCOUNT 0
+rule createvcf:
+    input: haplotypes = "results/{sample}/inferhaps/haplotypes.csv.gz",
+    output: haplotypesvcf = "results/{sample}/inferhaps/haplotypes.vcf",
+    threads: 1
+    resources: mem_mb=1024 * 50
+    singularity: "docker://marcjwilliams1/schnapps"
+    script: "scripts/create_vcf_file.R"
 
+def get_bam_list(wildcards):
+    x = metadata[metadata["sample"] == wildcards.sample]
+    bamlist = ','.join(x["bamfiles"])
+    return bamlist
+
+def get_cellid_list(wildcards):
+    x = metadata[metadata["sample"] == wildcards.sample]
+    cellidlist = ','.join(x["cell_id"])
+    return cellidlist
+
+rule genotypecells:
+    input:
+        haplotypesvcf = "results/{sample}/inferhaps/haplotypes.vcf",
+    params:
+        bams = get_bam_list,
+        cell_ids = get_cellid_list,
+        results_dir = directory("results/{sample}/counthaps/"),
+    output:
+        results_DP_mtx = "results/{sample}/counthaps/cellSNP.tag.DP.mtx",
+        results_AD_mtx = "results/{sample}/counthaps/cellSNP.tag.AD.mtx",
+        results_OTH_mtx = "results/{sample}/counthaps/cellSNP.tag.OTH.mtx",
+        results_sample = "results/{sample}/counthaps/cellSNP.samples.tsv",
+        vcf = "results/{sample}/counthaps/cellSNP.base.vcf.gz",
+    conda: "envs/cellsnp.yml"
+    threads: 40
+    resources: mem_mb=1024 * 4
+    shell:
+        """
+        cellsnp-lite -s {params.bams} \
+            -I {params.cell_ids} \
+            -O {params.results_dir} \
+            -R {input.haplotypesvcf} \
+            -p {threads} \
+            --cellTAG None \
+            --UMItag None \
+            --gzip \
+            --minCOUNT 0 \
+            --exclFLAG UNMAP,SECONDARY,QCFAIL,DUP
+        """
+
+rule format_per_cell_counts:
+    input: 
+        vcf = "results/{sample}/counthaps/cellSNP.base.vcf.gz",
+        results_DP_mtx = "results/{sample}/counthaps/cellSNP.tag.DP.mtx",
+        results_AD_mtx = "results/{sample}/counthaps/cellSNP.tag.AD.mtx",
+        results_OTH_mtx = "results/{sample}/counthaps/cellSNP.tag.OTH.mtx",
+        results_sample = "results/{sample}/counthaps/cellSNP.samples.tsv",
+        haplotypes = "results/{sample}/inferhaps/haplotypes.csv.gz"
+    output: 
+        alldata = "results/{sample}/counthaps/allele_counts_all.csv.gz",
+        perblock = "results/{sample}/counthaps/allele_counts_perblock.csv.gz"
+    threads: 40
+    resources: mem_mb=1024 * 4
+    singularity: "docker://marcjwilliams1/schnapps"
+    script: "scripts/format_vcf_haps.R"
+
+        # cellsnp-lite -s testdata/SA1090-A96213A-R20-C06.bam,testdata/SA1090-A96213A-R20-C08.bam \
+        #     -I SA1090-A96213A-R20-C06,SA1090-A96213A-R20-C08 \
+        #     -O cellsnptest \
+        #     -R haps.vcf \
+        #     -p 1 \
+        #     --cellTAG None \
+        #     --UMItag None \
+        #     --gzip \
+        #     --minCOUNT 0
