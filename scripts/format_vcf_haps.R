@@ -72,14 +72,16 @@ newdf <- haps[newdf, on = c("CHROM", "POS")] %>%
 
 fwrite(x = newdf, file = snakemake@output$alldata)
 
+binsize <- as.numeric(snakemake@config$hmmcopy$bin_size)
+
 summed_data <- newdf %>% 
-  .[, binid := floor(position / 0.5e6) * 0.5e6 + 1] %>%
+  .[, binid := floor(position / binsize) * binsize + 1] %>%
   .[, list(allele0 = sum(allele0),
            allele1 = sum(allele1),
            start = min(position),
            end = max(position)), by = c("cell_id", "chr", "hap_label", "binid")] %>% 
-  .[, start := floor(start / 0.5e6) * 0.5e6 + 1] %>%
-  .[, end := start + 0.5e6 - 1] %>%
+  .[, start := floor(start / binsize) * binsize + 1] %>%
+  .[, end := start + binsize - 1] %>%
   .[, binid := NULL] %>% 
   .[, totalcounts := allele0 + allele1] %>% 
   .[order(cell_id, chr, hap_label)]

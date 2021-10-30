@@ -1,25 +1,22 @@
-bamdir: "testdata/"
 samplemetadata: "metadata/samples.csv"
-classifier_training_data: "/juno/work/shah/reference/singlecellpipeline/human/classifier_training_data.h5"
-reference_gc: /juno/work/shah/reference/singlecellpipeline/human/reference_gc_grch37.csv
+classifier_training_data: "refdata/human/classifier_training_data.h5"
+reference_gc: refdata/human/reference_gc_grch37.csv
 
-infer_haps_singularity: /work/shah/isabl_software/singularity_sifs/scp/scp_infer_count_haps_v0_8_9.sif
-
-refdir: /juno/work/shah/reference/singlecellpipeline
-thousand_genomes_snps: /juno/work/shah/reference/singlecellpipeline/human/thousand_genomes_snps.tsv
-ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+refdir: refdata/
+thousand_genomes_snps: refdata/human/thousand_genomes_snps.tsv
+ref_genome: refdata/human/GRCh37-lite.fa
 
 mappability:
-  local_path: /juno/work/shah/reference/singlecellpipeline/human/wgEncodeCrgMapabilityAlign50mer.bigWig
+  local_path: refdata/human/wgEncodeCrgMapabilityAlign50mer.bigWig
   url: http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/release3/wgEncodeCrgMapabilityAlign50mer.bigWig
 
 bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GRCh37-lite.bw"
 
 hmmcopy:
   bin_size: 500000
-  gc_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.gc.ws_500000.wig
-  map_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.map.ws_125_to_500000.wig
-  ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+  gc_wig_file: refdata/human/GRCh37-lite.gc.ws_500000.wig
+  map_wig_file: refdata/GRCh37-lite.map.ws_125_to_500000.wig
+  ref_genome: refdata/human/GRCh37-lite.fa
   chromosomes:
   - '1'
   - '2'
@@ -50,7 +47,7 @@ hmmcopy:
     single_cell_pipeline: single_cell_pipeline:v0.6.41
   e: 0.999999
   eta: 50000
-  exclude_list: /juno/work/shah/reference/singlecellpipeline/human/repeats.satellite.regions
+  exclude_list: refdata/human/repeats.satellite.regions
   g: 3
   good_cells:
   - - median_hmmcopy_reads_per_bin
@@ -104,11 +101,11 @@ infer_haps:
   - X
   - Y
   extract_seqdata:
-    genome_fai_template: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa.fai
-    genome_fasta_template: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
+    genome_fai_template: refdata/human/GRCh37-lite.fa.fai
+    genome_fasta_template: refdata/human/GRCh37-lite.fa
   max_cores: null
   memory:
     high: 16
     low: 4
     med: 6
-  ref_data_dir: /juno/work/shah/reference/singlecellpipeline/human/
+  ref_data_dir: refdata/human/

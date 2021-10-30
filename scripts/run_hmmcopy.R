@@ -344,8 +344,6 @@ if (!is.null(opt$help)) {
 
 chromosomes <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y")
 
-save.image("test.rds")
-
 param <- get_parameters(opt$param_str, opt$param_e, opt$param_mu, opt$param_l, opt$param_nu, opt$param_k, opt$param_m, opt$param_eta, opt$param_g, opt$param_s)
 
 run_hmmcopy(opt$sample_id, opt$corrected_data, param, opt$outdir, opt$param_multiplier)
