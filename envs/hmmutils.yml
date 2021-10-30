@@ -1,0 +1,14 @@
+name: hmmcopy
+channels:
+  - dranew
+  - http://conda.anaconda.org/gurobi
+  - conda-forge
+  - bioconda
+  - r
+  - https://conda.anaconda.org/shahcompbio
+  - https://conda.anaconda.org/aroth85
+  - https://conda.anaconda.org/dranew
+  - defaults
+dependencies:
+  - hmmcopy_utils=0.0.1=1
+prefix: /home/william1/miniconda3/envs/hmmcopy

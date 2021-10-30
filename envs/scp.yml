@@ -1,0 +1,12 @@
+name: scp
+channels:
+  - http://conda.anaconda.org/gurobi
+  - conda-forge
+  - bioconda
+  - r
+  - https://conda.anaconda.org/shahcompbio
+  - https://conda.anaconda.org/aroth85
+  - https://conda.anaconda.org/dranew
+  - defaults
+dependencies:
+  - single_cell_pipeline_hmmcopy
