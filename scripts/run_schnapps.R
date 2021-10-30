@@ -244,6 +244,8 @@ parser$add_argument("--maxcellsplotting", default=2500, type="integer",
                     help="Max number of cells to plot in the heatmap")
 parser$add_argument("--mincells", default=8, type="integer",
                     help="Max number of cells to plot in the heatmap")
+parser$add_argument("--qualfilter", default=0.75, type="double",
+                    help="Quality score cutoff")
 parser$add_argument("--sphasefilter", action = "store_false",
                     help="Filter out sphase cells or not")
 
@@ -252,7 +254,8 @@ print(args)
 
 cndata <- read_copynumber_dlp(cnpaths = args$hmmcopyreads,
                               metricspaths = args$hmmcopyqc, 
-                              s_phase_filter = args$sphasefilter)
+                              s_phase_filter = args$sphasefilter,
+                              quality_filter = args$qualfilter)
 cell_ids <- unique(cndata$metrics$cell_id)
 message(paste0("Number of cells: ", length(cell_ids)))
 

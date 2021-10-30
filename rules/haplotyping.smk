@@ -1,6 +1,5 @@
-
 def getnormalbam(wildcards):
-    x = metadata[metadata_normal["sample"] == wildcards.sample]
+    x = metadata_normal[metadata_normal["sample"] == wildcards.sample]
     return x["bamfiles"]
 
 rule create_yaml_normal_inferhaps:
@@ -100,6 +99,6 @@ rule format_per_cell_counts:
         alldata = "results/{sample}/counthaps/allele_counts_all.csv.gz",
         perblock = "results/{sample}/counthaps/allele_counts_perblock.csv.gz"
     threads: 40
-    resources: mem_mb=1024 * 4
+    resources: mem_mb=1024 * 1
     singularity: "docker://marcjwilliams1/schnapps"
     script: "../scripts/format_vcf_haps.R"

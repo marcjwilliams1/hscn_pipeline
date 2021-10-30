@@ -14,6 +14,7 @@ rule schnapps:
     resources: mem_mb=1024 * 4
     params:
         mincells=config["schnapps"]["mincells"],
+        qualfilter=config["schnapps"]["qualfilter"]
     singularity: "docker://marcjwilliams1/schnapps"
     shell:
         """
@@ -29,5 +30,6 @@ rule schnapps:
             --qccsvfile {output.qc} \
             --Rdatafile {output.rdata} \
             --sphasefilter \
+            --qualfilter {params.qualfilter} \
             --mincells {params.mincells}
         """
