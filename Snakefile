@@ -1,7 +1,6 @@
 import pandas as pd
 
 configfile: "config.yaml"
-CELL_IDS, = glob_wildcards(config["bamdir"] + "{id}.bam")
 metadata = pd.read_csv(config["samplemetadata"])
 
 #seperate out normal bam file from tumor cell bams

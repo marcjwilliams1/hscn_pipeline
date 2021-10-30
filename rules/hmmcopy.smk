@@ -11,7 +11,6 @@ rule read_counter:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
-    #conda: "../envs/scp.yml"
     params:
         exclude_list=config["hmmcopy"]["exclude_list"],
         bin_size=config["hmmcopy"]["bin_size"],
@@ -20,7 +19,7 @@ rule read_counter:
     shell:
         """
         mkdir -p {output[0]}
-        python ../scripts/read_counter.py {input[0]} {output[1]} \
+        python scripts/read_counter.py {input[0]} {output[1]} \
             -w {params.bin_size} \
             --exclude_list {params.exclude_list} \
             --mapping_quality_threshold {params.mapq}
@@ -32,13 +31,13 @@ rule correct_read_counts:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
-    conda: "../envs/scp.yml"
+    singularity: "docker://quay.io/singlecellpipeline/single_cell_pipeline_hmmcopy:v0.8.9"
     params:
         gc_wig_file=config["hmmcopy"]["gc_wig_file"],
         map_wig_file=config["hmmcopy"]["map_wig_file"]
     shell:
         """
-        python ../scripts/corrected_read_counts.py {params.gc_wig_file} {params.map_wig_file} {input[0]} {output[0]}
+        python scripts/corrected_read_counts.py {params.gc_wig_file} {params.map_wig_file} {input[0]} {output[0]}
         """
 
 rule runhmmcopy:
@@ -50,7 +49,6 @@ rule runhmmcopy:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
-    #conda: "envs/scp.yml"
     params: 
         strength=config["hmmcopy"]["strength"],
         e=config["hmmcopy"]["e"],
@@ -66,8 +64,8 @@ rule runhmmcopy:
     singularity: "docker://quay.io/singlecellpipeline/single_cell_pipeline_hmmcopy:v0.8.9"
     shell:
         """
-        mkdir {output[0]}
-        Rscript ../scripts/run_hmmcopy.R --corrected_data={input[0]} \
+        mkdir -p {output[0]}
+        Rscript scripts/run_hmmcopy.R --corrected_data={input[0]} \
                                       --outdir={output[0]} \
                                       --sample_id={wildcards.cell_id} \
                                       --param_str={params.strength} \
@@ -105,7 +103,6 @@ rule add_metrics:
     threads: 1
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 1024 * 30
-    #conda: "envs/scp.yml"
     singularity: "docker://quay.io/singlecellpipeline/single_cell_pipeline_hmmcopy:v0.8.9"
     script: "../scripts/extend_qc.py"
 

@@ -26,12 +26,9 @@ rule inferhaps:
     singularity: "docker://quay.io/singlecellpipeline/single_cell_pipeline_haplotypes:v0.8.9"
     shell:
         """
-        module load singularity
-        export LSF_SERVERDIR=/admin/lsfjuno/lsf/10.1/linux3.10-glibc2.17-x86_64/etc 
-        export PATH=/common/juno/OS7/10.1/linux3.10-glibc2.17-x86_64/bin:$PATH 
-        singularity run --bind /work/shah/users/william1/projects/schnapps_input_pipeline --bind /juno --bind /admin --bind /common \
-            {params.singularity}  \
-            single_cell infer_haps \
+        #export LSF_SERVERDIR=/admin/lsfjuno/lsf/10.1/linux3.10-glibc2.17-x86_64/etc 
+        #export PATH=/common/juno/OS7/10.1/linux3.10-glibc2.17-x86_64/bin:$PATH 
+        single_cell infer_haps \
             --input_yaml {input.yaml} \
             --maxjobs {threads} \
             --nocleanup \
@@ -74,8 +71,8 @@ rule genotypecells:
         results_OTH_mtx = "results/{sample}/counthaps/cellSNP.tag.OTH.mtx",
         results_sample = "results/{sample}/counthaps/cellSNP.samples.tsv",
         vcf = "results/{sample}/counthaps/cellSNP.base.vcf.gz",
-    conda: "envs/cellsnp.yml"
-    threads: 40
+    conda: "../envs/cellsnp.yml"
+    threads: 50
     resources: mem_mb=1024 * 1
     shell:
         """

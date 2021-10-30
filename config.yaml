@@ -12,10 +12,13 @@ mappability:
 
 bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GRCh37-lite.bw"
 
+schnapps:
+  mincells: 5
+
 hmmcopy:
   bin_size: 500000
   gc_wig_file: refdata/human/GRCh37-lite.gc.ws_500000.wig
-  map_wig_file: refdata/GRCh37-lite.map.ws_125_to_500000.wig
+  map_wig_file: refdata/human/GRCh37-lite.map.ws_125_to_500000.wig
   ref_genome: refdata/human/GRCh37-lite.fa
   chromosomes:
   - '1'
