@@ -20,6 +20,11 @@ Make sure this folder is in the same folder as the Snakefile and is called `refd
 ## Config options
 
 The default bin size is 0.5Mb, you can change this by modifying the `config.yaml` file. You'll need to change the `bin_size` parameter and the reference wig files. You can find these files at different bin sizes [here](https://zenodo.org/record/5549581).
+```
+https://zenodo.org/record/5549581/files/hmmcopy_wigfiles.tar.gz
+tar -xvf hmmcopy_wigfiles.tar.gz
+mv forzip/ hmmcopy_wigfiles
+```
 
 Reference files are provided for hg19. If you want to use hg38, you'll need to supply a *fa file, change the wig files (see the zenodo link for hg38 files) and change the 1000 genome snps file. Please raise an issue if you need help with any of this.
 
@@ -40,9 +45,9 @@ The pipeline performs the following steps:
 
 The final output will appear in `results/{sample}/schnapps/`. This includes an Rdata file of the schnapps object which can be opened in R and then explored interactively using schnapps. Also included is a csv file of allele specific calls per cell, qc plots and heatmaps of all the data.
 
-## Recommendations
+## Running recommendations
 
-Depending on the number of cells you have, the pipeline can take quite a long time so running on a HPC is recommended. Using snakemake profiles is an easy way to achieve this. Once you have set up a profile you can submit a job to your cluster and snakemake will submit all the steps as seperate jobs. For example the following code snippet will work for a cluster running LSF.
+Depending on the number of cells you have, the pipeline can take quite a long time so running on a HPC is recommended. Using snakemake profiles is an easy way to achieve this. Once you have set up a profile you can submit a job to your cluster and snakemake will take care of the rest and submit all the steps as seperate jobs. For example the following code snippet will work for a cluster running LSF.
 
 ```
 #!/bin/bash
