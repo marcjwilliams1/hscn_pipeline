@@ -4,7 +4,7 @@ configfile: "config.yaml"
 CELL_IDS, = glob_wildcards(config["bamdir"] + "{id}.bam")
 metadata = pd.read_csv(config["samplemetadata"])
 
-#seperate out normal bam file from tumor cells
+#seperate out normal bam file from tumor cell bams
 metadata_normal = metadata[metadata["normal"] == "T"]
 metadata = metadata[metadata["normal"] == "F"]
 samples = metadata["sample"].unique()
@@ -14,7 +14,8 @@ rule all:
     input:
         expand("results/{sample}/hmmcopy_results/metrics.csv.gz", sample = samples),
         expand("results/{sample}/hmmcopy_results/reads.csv.gz", sample = samples),
-        expand("results/{sample}/counthaps/allele_counts_perblock.csv.gz", sample = samples)
+        expand("results/{sample}/counthaps/allele_counts_perblock.csv.gz", sample = samples),
+        expand("results/{sample}/schnapps/schnapps.Rdata", sample = samples)
         #"results/inferhaps/haplotypes.csv.gz"
 
 def getbamfile(wildcards):
@@ -26,7 +27,6 @@ rule read_counter:
     input: getbamfile
     output: 
         mydir = directory("results/{sample}/read_counts/{cell_id}/"),
-        file1 = "results/{sample}/read_counts/{cell_id}/test.txt",
         file2 = "results/{sample}/read_counts/{cell_id}/wig.txt",
     threads: 1
     resources:
@@ -39,8 +39,10 @@ rule read_counter:
     shell:
         """
         mkdir -p {output[0]}
-        python scripts/read_counter.py {input[0]} {output[2]} -w {params.bin_size} --exclude_list {params.exclude_list} --mapping_quality_threshold {params.mapq}
-        touch {output[1]}
+        python scripts/read_counter.py {input[0]} {output[1]} \
+            -w {params.bin_size} \
+            --exclude_list {params.exclude_list} \
+            --mapping_quality_threshold {params.mapq}
         """
 
 rule correct_read_counts:
@@ -290,7 +292,7 @@ rule genotypecells:
         vcf = "results/{sample}/counthaps/cellSNP.base.vcf.gz",
     conda: "envs/cellsnp.yml"
     threads: 40
-    resources: mem_mb=1024 * 4
+    resources: mem_mb=1024 * 1
     shell:
         """
         cellsnp-lite -s {params.bams} \
@@ -321,12 +323,35 @@ rule format_per_cell_counts:
     singularity: "docker://marcjwilliams1/schnapps"
     script: "scripts/format_vcf_haps.R"
 
-        # cellsnp-lite -s testdata/SA1090-A96213A-R20-C06.bam,testdata/SA1090-A96213A-R20-C08.bam \
-        #     -I SA1090-A96213A-R20-C06,SA1090-A96213A-R20-C08 \
-        #     -O cellsnptest \
-        #     -R haps.vcf \
-        #     -p 1 \
-        #     --cellTAG None \
-        #     --UMItag None \
-        #     --gzip \
-        #     --minCOUNT 0
+rule schnapps:
+    input:
+        haplotypes = "results/{sample}/counthaps/allele_counts_perblock.csv.gz",
+        qc = "results/{sample}/hmmcopy_results/metrics.csv.gz",
+        hmmcopy = "results/{sample}/hmmcopy_results/reads.csv.gz"
+    output:
+        qc = "results/{sample}/schnapps/qc.csv.gz",
+        qcplot = "results/{sample}/schnapps/qc.png",
+        csv = "results/{sample}/schnapps/schnapps.csv.gz",
+        heatmap = "results/{sample}/schnapps/heatmap.png",
+        heatmapraw = "results/{sample}/schnapps/heatmapraw.png",
+        rdata = "results/{sample}/schnapps/schnapps.Rdata"
+    threads: 10
+    resources: mem_mb=1024 * 4
+    singularity: "docker://marcjwilliams1/schnapps"
+    shell:
+        """
+        pwd
+        #module load R/R-3.6.1
+        Rscript scripts/run_schnapps.R  \
+            --hmmcopyqc {input.qc} \
+            --hmmcopyreads {input.hmmcopy}  \
+            --allelecounts {input.haplotypes}  \
+            --ncores {threads} \
+            --qcplot {output.qcplot} \
+            --heatmap {output.heatmap} \
+            --heatmapraw {output.heatmapraw} \
+            --csvfile {output.csv} \
+            --qccsvfile {output.qc} \
+            --Rdatafile {output.rdata} \
+            --sphasefilter
+        """

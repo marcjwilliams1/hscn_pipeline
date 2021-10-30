@@ -17,6 +17,9 @@ bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GR
 
 hmmcopy:
   bin_size: 500000
+  gc_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.gc.ws_500000.wig
+  map_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.map.ws_125_to_500000.wig
+  ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
   chromosomes:
   - '1'
   - '2'
@@ -49,7 +52,6 @@ hmmcopy:
   eta: 50000
   exclude_list: /juno/work/shah/reference/singlecellpipeline/human/repeats.satellite.regions
   g: 3
-  gc_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.gc.ws_500000.wig
   good_cells:
   - - median_hmmcopy_reads_per_bin
     - ge
@@ -64,7 +66,6 @@ hmmcopy:
   lambda: 20
   m: "0,1,2,3,4,5,6,7,8,9,10,11"
   map_cutoff: 0.9
-  map_wig_file: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.map.ws_125_to_500000.wig
   memory:
     med: 6
   min_mqual: 20
@@ -72,7 +73,6 @@ hmmcopy:
   multipliers: "1,2,3,4,5,6"
   nu: 2.1
   num_states: 12
-  ref_genome: /juno/work/shah/reference/singlecellpipeline/human/GRCh37-lite.fa
   s: 1
   smoothing_function: modal
   strength: 1000
