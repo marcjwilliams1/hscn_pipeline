@@ -8,4 +8,4 @@ genotypecells:
   - "-W 72:0"
 
 format_per_cell_counts:
-  - "-W 48:0"
+  - "-W 4:0"
