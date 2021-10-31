@@ -4,7 +4,7 @@ This is a snakemake pipeline to produce estimates of allele specific copy number
 
 ## Input files
 
-The required input files as single cell tumour bam files and a bulk normal bam file. These should be listed in a csv file along with sample ID's. An example csv is provided in the `metadata` folder. Your sample csv should also be placed here. 
+The required input files are single cell tumour bam files and a bulk normal bam file. These should be listed in a csv file along with sample ID's. An example csv is provided in the `metadata` folder. Your sample csv should also be placed here. If you have data produced from the 10X CNV assay you can demultiplex the bam into single cell bams. See the `demultiplex10X` folder for a seperate snakemake pipeline to do that.
 
 ## Reference files
 
@@ -26,7 +26,7 @@ tar -xvf hmmcopy_wigfiles.tar.gz
 mv forzip/ hmmcopy_wigfiles
 ```
 
-Reference files are provided for hg19. If you want to use hg38, you'll need to supply a *fa file, change the wig files (see the zenodo link for hg38 files) and change the 1000 genome snps file. Please raise an issue if you need help with any of this.
+Reference files are provided for hg19. If you want to use hg38, you'll need to supply a *fa file, change the wig files (see the zenodo link for hg38 files) and change the reference files used by shapeit.
 
 ## What does the pipeline do?
 

@@ -1,7 +1,6 @@
 import pandas as pd
 
-metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_per_cell_summary_metrics.csv").head(12)
-
+metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_per_cell_summary_metrics.csv")
 rule all:
     input:
         expand("results/align/{barcode}.bam", barcode = metrics["barcode"])
@@ -27,20 +26,7 @@ rule getheader:
         samtools view -H {input[0]} > {output[0]}
         """
 
-rule splitbamold:
-    input: 
-        bam = "results/sam/breast_tissue_A_2k_possorted_bam.sam",
-    params:
-        barcodes = metrics["barcode"]
-    output:
-        bamdir = directory("results/align/"),
-        bams = temp(expand("results/align/{barcode}-2.sam", barcode = metrics["barcode"]))
-    threads: 5
-    resources: mem_mb=1024 * 10
-    script:
-        "scripts/splitbam.py"
-
-rule splitbamnew:
+rule splitbam:
     input: 
         sam = "results/sam/breast_tissue_A_2k_possorted_bam.sam",
     output:
