@@ -1,0 +1,74 @@
+import pandas as pd
+
+metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_per_cell_summary_metrics.csv").head(12)
+
+rule all:
+    input:
+        expand("results/align/{barcode}.bam", barcode = metrics["barcode"])
+
+rule samtools_view:
+    input:
+        "/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_possorted_bam.bam",
+    output:
+        "results/sam/breast_tissue_A_2k_possorted_bam.sam"
+    params:
+        extra="" # optional params string
+    wrapper:
+        "0.79.0/bio/samtools/view"
+
+rule getheader:
+    input:
+        "/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_possorted_bam.bam",
+    output:
+        "results/sam/breast_tissue_A_2k_possorted_bam.header"
+    shell:
+        """
+        module load samtools
+        samtools view -H {input[0]} > {output[0]}
+        """
+
+rule splitbamold:
+    input: 
+        bam = "results/sam/breast_tissue_A_2k_possorted_bam.sam",
+    params:
+        barcodes = metrics["barcode"]
+    output:
+        bamdir = directory("results/align/"),
+        bams = temp(expand("results/align/{barcode}-2.sam", barcode = metrics["barcode"]))
+    threads: 5
+    resources: mem_mb=1024 * 10
+    script:
+        "scripts/splitbam.py"
+
+rule splitbamnew:
+    input: 
+        sam = "results/sam/breast_tissue_A_2k_possorted_bam.sam",
+    output:
+        sam = temp("results/align/{barcode}.sam")
+    threads: 1
+    resources: mem_mb=1024 * 10
+    shell:
+        """
+        LC_ALL=C fgrep {wildcards.barcode} {input.sam} > {output.sam}
+        """
+
+rule addheader:
+    input:
+        header = "results/sam/breast_tissue_A_2k_possorted_bam.header",
+        sam = "results/align/{barcode}.sam"
+    output:
+        samheader = temp("results/alignheader/{barcode}.header.sam")
+    shell:
+        """
+        cat {input.header} {input.sam} > {output.samheader}
+        """
+
+rule sam2bam:
+    input:
+        "results/alignheader/{barcode}.header.sam"
+    output:
+        "results/align/{barcode}.bam"
+    params:
+        extra="" # optional params string
+    wrapper:
+        "0.79.0/bio/samtools/view"
