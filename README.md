@@ -21,7 +21,7 @@ Make sure this folder is in the same folder as the Snakefile and is called `refd
 
 The default bin size is 0.5Mb, you can change this by modifying the `config.yaml` file. You'll need to change the `bin_size` parameter and the reference wig files. You can find these files at different bin sizes [here](https://zenodo.org/record/5549581).
 ```
-https://zenodo.org/record/5549581/files/hmmcopy_wigfiles.tar.gz
+wget https://zenodo.org/record/5549581/files/hmmcopy_wigfiles.tar.gz
 tar -xvf hmmcopy_wigfiles.tar.gz
 mv forzip/ hmmcopy_wigfiles
 ```

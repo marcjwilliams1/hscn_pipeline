@@ -14,11 +14,15 @@ bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GR
 
 schnapps:
   mincells: 5
+  qualfilter: 0.5
+
+# refdata/human/GRCh37-lite.gc.ws_500000.wig
+#refdata/human/GRCh37-lite.map.ws_125_to_500000.wig
 
 hmmcopy:
-  bin_size: 500000
-  gc_wig_file: refdata/human/GRCh37-lite.gc.ws_500000.wig
-  map_wig_file: refdata/human/GRCh37-lite.map.ws_125_to_500000.wig
+  bin_size: 200000
+  gc_wig_file: hmmcopy_wigfiles/wigfiles/grch37/GRCh37-lite.gc.ws_200000.wig
+  map_wig_file: hmmcopy_wigfiles/wigfiles/grch37/GRCh37-lite.map.ws_200000.wig
   ref_genome: refdata/human/GRCh37-lite.fa
   chromosomes:
   - '1'
