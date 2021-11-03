@@ -10,11 +10,9 @@ mappability:
   local_path: refdata/human/wgEncodeCrgMapabilityAlign50mer.bigWig
   url: http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/release3/wgEncodeCrgMapabilityAlign50mer.bigWig
 
-bigwig: "/juno/work/shah/users/william1/projects/schnapps_input_pipeline/refs/GRCh37-lite.bw"
-
 schnapps:
   mincells: 5
-  qualfilter: 0.5
+  qualfilter: 0.0
 
 # refdata/human/GRCh37-lite.gc.ws_500000.wig
 #refdata/human/GRCh37-lite.map.ws_125_to_500000.wig

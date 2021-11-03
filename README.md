@@ -1,6 +1,6 @@
 # Haplotype specific copy number in single cell whole genome sequencing
 
-This is a snakemake pipeline to produce estimates of haplotype specific copy number in single cells using [schnapps](https://github.com/shahcompbio/schnapps). schnapps takes as input total copy number estimates and per cell haplotype block counts as outputted from the Shah lab's (single cell pipeline)[https://github.com/shahcompbio/single_cell_pipeline]. If possible, it is advised to use the official realease and the steps outlined (here)[https://github.com/shahcompbio/single_cell_pipeline/blob/master/docs/source/install.md]. The official release page will likely be more up to date and continue to have bug fixes. This pipeline is provided as a lightweight alternative to go along with the our paper (link), and for those with other technologies wanting to explore the code.
+This is a snakemake pipeline to produce estimates of haplotype specific copy number in single cells using [schnapps](https://github.com/shahcompbio/schnapps). schnapps takes as input total copy number estimates and per cell haplotype block counts as outputted from the Shah lab's [single cell pipeline](https://github.com/shahcompbio/single_cell_pipeline). If possible, it is advised to use the official realease and the steps outlined [here](https://github.com/shahcompbio/single_cell_pipeline/blob/master/docs/source/install.md). The official release will likely be more up to date and continue to have bug fixes. This pipeline is provided as a lightweight alternative to go along with the our paper (link), and for those with other technologies wanting to explore the code.
 
 ## Input files
 
@@ -40,6 +40,10 @@ The pipeline performs the following steps:
 6. Genotypes SNPs in the single cells using [cellsnp-lite](https://cellsnp-lite.readthedocs.io/en/latest/)
 7. Merges the per cell SNP counts into haplotype block counts
 8. Estimates haplotype specific copy number using schnapps.
+
+## Things the pipeline does not do...
+
+Please note that currently this pipeline does not classify cell cycle phase, attempt to detect contamination from bacteria or other organisms or call somatic SNV's and breakpoints. See the officially supported pipelines for all these additional features. This is only provided as a lightweight setup to run the necessary steps to produce the inputs for schnapps.
 
 ## Outputs
 
