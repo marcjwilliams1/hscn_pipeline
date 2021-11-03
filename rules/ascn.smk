@@ -15,7 +15,7 @@ rule schnapps:
     params:
         mincells=config["schnapps"]["mincells"],
         qualfilter=config["schnapps"]["qualfilter"]
-    singularity: "docker://marcjwilliams1/schnapps:v0.6.2"
+    singularity: "docker://marcjwilliams1/schnapps:latest"
     shell:
         """
         Rscript scripts/run_schnapps.R  \

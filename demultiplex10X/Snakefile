@@ -1,15 +1,15 @@
 import pandas as pd
 
-metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_per_cell_summary_metrics.csv")
+metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_e_2000/breast_tissue_E_2k_per_cell_summary_metrics.csv")
 rule all:
     input:
         expand("results/align/{barcode}.bam", barcode = metrics["barcode"])
 
 rule samtools_view:
     input:
-        "/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_possorted_bam.bam",
+        "/work/shah/users/grewald/analyses/10X/breast_tissue_e_2000/breast_tissue_E_2k_possorted_bam.bam",
     output:
-        "results/sam/breast_tissue_A_2k_possorted_bam.sam"
+        "results/sam/breast_tissue_E_2k_possorted_bam.sam"
     params:
         extra="" # optional params string
     wrapper:
@@ -17,9 +17,9 @@ rule samtools_view:
 
 rule getheader:
     input:
-        "/work/shah/users/grewald/analyses/10X/breast_tissue_a_2000/breast_tissue_A_2k_possorted_bam.bam",
+        "/work/shah/users/grewald/analyses/10X/breast_tissue_e_2000/breast_tissue_E_2k_possorted_bam.bam",
     output:
-        "results/sam/breast_tissue_A_2k_possorted_bam.header"
+        "results/sam/breast_tissue_E_2k_possorted_bam.header"
     shell:
         """
         module load samtools
@@ -28,7 +28,7 @@ rule getheader:
 
 rule splitbam:
     input: 
-        sam = "results/sam/breast_tissue_A_2k_possorted_bam.sam",
+        sam = "results/sam/breast_tissue_E_2k_possorted_bam.sam",
     output:
         sam = temp("results/align/{barcode}.sam")
     threads: 1
@@ -40,7 +40,7 @@ rule splitbam:
 
 rule addheader:
     input:
-        header = "results/sam/breast_tissue_A_2k_possorted_bam.header",
+        header = "results/sam/breast_tissue_E_2k_possorted_bam.header",
         sam = "results/align/{barcode}.sam"
     output:
         samheader = temp("results/alignheader/{barcode}.header.sam")

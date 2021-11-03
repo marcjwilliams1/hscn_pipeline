@@ -1,8 +1,6 @@
 library(data.table)
 library(tidyverse)
 
-save.image("mytest.rds")
-
 getdf <- function(x, ...) {
   
   s <- Matrix::summary(x)
