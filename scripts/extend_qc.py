@@ -3,6 +3,10 @@ import os
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
+import time
+from random import random
+time.sleep(random() * 5 * 60)
+
 def train_classifier(filename):
     training_data = read_from_h5(filename, '/training_data')
 
