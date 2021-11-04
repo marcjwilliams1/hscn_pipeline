@@ -166,6 +166,7 @@ rule mergereads:
         allreadsfile
     output:
         merged = "results/{sample}/hmmcopy_results/reads.csv.gz"
+    resources: mem_mb=lambda wildcards, attempt: attempt * 1024 * 50
     run:
         dist_list = []
         for f in input:
@@ -186,6 +187,7 @@ rule mergemetrics:
         allmetricsfile
     output:
         merged = "results/{sample}/hmmcopy_results/metrics.csv.gz"
+    resources: mem_mb=lambda wildcards, attempt: attempt * 1024 * 50
     run:
         dist_list = []
         for f in input:
