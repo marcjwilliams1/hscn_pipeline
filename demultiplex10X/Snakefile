@@ -3,7 +3,7 @@ import pandas as pd
 metrics = pd.read_csv("/work/shah/users/grewald/analyses/10X/breast_tissue_e_2000/breast_tissue_E_2k_per_cell_summary_metrics.csv")
 rule all:
     input:
-        expand("results/align/{barcode}.bam", barcode = metrics["barcode"])
+        expand("results/align/{barcode}.bam.bai", barcode = metrics["barcode"])
 
 rule samtools_view:
     input:
@@ -58,3 +58,15 @@ rule sam2bam:
         extra="" # optional params string
     wrapper:
         "0.79.0/bio/samtools/view"
+
+rule samtools_index:
+    input:
+        "results/align/{barcode}.bam"
+    output:
+        "results/align/{barcode}.bam.bai"
+    params:
+        "" # optional params string
+    threads:  # Samtools takes additional threads through its option -@
+        4     # This value - 1 will be sent to -@
+    wrapper:
+        "0.79.0/bio/samtools/index"
