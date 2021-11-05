@@ -11,7 +11,7 @@ rule schnapps:
         heatmapraw = report("results/{sample}/schnapps/heatmapraw.png", category = "Heatmaps Raw"),
         rdata = "results/{sample}/schnapps/schnapps.Rdata"
     threads: 10
-    resources: mem_mb=1024 * 4
+    resources: mem_mb=lambda wildcards, attempt: attempt * 1024 * 5
     params:
         mincells=config["schnapps"]["mincells"],
         qualfilter=config["schnapps"]["qualfilter"]

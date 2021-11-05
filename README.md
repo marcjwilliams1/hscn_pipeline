@@ -4,7 +4,9 @@ This is a snakemake pipeline to produce estimates of haplotype specific copy num
 
 ## Input files
 
-The required input files are single cell tumour bam files and a bulk normal bam file. These should be listed in a csv file along with sample ID's. An example csv is provided in the `metadata` folder. Your sample csv should also be placed here. If you have data produced from the 10X CNV assay you can demultiplex the bam into single cell bams. See the `demultiplex10X` folder for a seperate snakemake pipeline to do that.
+The required input files are single cell tumour bam files and a bulk normal bam file. These should be listed in a csv file along with sample ID's. A normal bam file should also be included here for the haplotype calling, this should have the value `T` in the `normal` column. An example csv is provided in the `metadata` folder. You can have multiple patients per file, just ensure that they have different `sample` names. The location and name of this metadata file should be accurate in the top of the config.yaml file. 
+
+If you have data produced from the 10X CNV assay you can demultiplex the bam into single cell bams. See the `demultiplex10X` folder for a seperate snakemake pipeline to do that.
 
 ## Reference files
 
