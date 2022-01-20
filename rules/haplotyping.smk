@@ -42,7 +42,7 @@ rule createvcf:
     output: haplotypesvcf = "results/{sample}/inferhaps/haplotypes.vcf",
     threads: 1
     resources: mem_mb=1024 * 50
-    singularity: "docker://marcjwilliams1/schnapps"
+    singularity: "docker://marcjwilliams1/signals"
     script: "../scripts/create_vcf_file.R"
 
 rule genotypecells:
@@ -87,7 +87,7 @@ rule format_per_cell_counts:
         perblock = temp("results/{sample}/counthaps/{cell_id}/allele_counts_perblock.csv.gz")
     threads: 5
     resources: mem_mb=1024 * 5
-    singularity: "docker://marcjwilliams1/schnapps"
+    singularity: "docker://marcjwilliams1/signals"
     script: "../scripts/format_vcf_haps.R"
 
 def allsnpsfiles(wildcards):
