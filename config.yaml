@@ -10,7 +10,7 @@ mappability:
   local_path: refdata/human/wgEncodeCrgMapabilityAlign50mer.bigWig
   url: http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/release3/wgEncodeCrgMapabilityAlign50mer.bigWig
 
-schnapps:
+signals:
   mincells: 5
   qualfilter: 0.0
 
