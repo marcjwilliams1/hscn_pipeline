@@ -18,7 +18,7 @@ rule signals:
     singularity: "docker://marcjwilliams1/signals:latest"
     shell:
         """
-        Rscript scripts/run_schnapps.R  \
+        Rscript scripts/run_signals.R  \
             --hmmcopyqc {input.qc} \
             --hmmcopyreads {input.hmmcopy}  \
             --allelecounts {input.haplotypes}  \
