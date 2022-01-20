@@ -1,6 +1,6 @@
 # Haplotype specific copy number in single cell whole genome sequencing
 
-This is a snakemake pipeline to produce estimates of haplotype specific copy number in single cells using [schnapps](https://github.com/shahcompbio/schnapps). schnapps takes as input total copy number estimates and per cell haplotype block counts as outputted from the Shah lab's [single cell pipeline](https://github.com/shahcompbio/single_cell_pipeline). If possible, it is advised to use the official realease and the steps outlined [here](https://github.com/shahcompbio/single_cell_pipeline/blob/master/docs/source/install.md). The official release will likely be more up to date and continue to have bug fixes. This pipeline is provided as a lightweight alternative to go along with the our paper (link), and for those with other technologies wanting to explore the code.
+This is a snakemake pipeline to produce estimates of haplotype specific copy number in single cells using [signals](https://github.com/shahcompbio/signals). signals takes as input total copy number estimates and per cell haplotype block counts as outputted from the Shah lab's [single cell pipeline](https://github.com/shahcompbio/single_cell_pipeline). If possible, it is advised to use the official realease and the steps outlined [here](https://github.com/shahcompbio/single_cell_pipeline/blob/master/docs/source/install.md). The official release will likely be more up to date and continue to have bug fixes. This pipeline is provided as a lightweight alternative to go along with the our paper (link), and for those with other technologies wanting to explore the code.
 
 ## Input files
 
@@ -41,15 +41,15 @@ The pipeline performs the following steps:
 5. Infer haplotype blocks from a matched normal genome using [SHAPEIT](https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html).
 6. Genotypes SNPs in the single cells using [cellsnp-lite](https://cellsnp-lite.readthedocs.io/en/latest/)
 7. Merges the per cell SNP counts into haplotype block counts
-8. Estimates haplotype specific copy number using schnapps.
+8. Estimates haplotype specific copy number using signals.
 
 ## Things the pipeline does not do...
 
-Please note that currently this pipeline does not classify cell cycle phase, attempt to detect contamination from bacteria or other organisms or call somatic SNV's and breakpoints. See the officially supported pipelines for all these additional features. This is only provided as a lightweight setup to run the necessary steps to produce the inputs for schnapps.
+Please note that currently this pipeline does not classify cell cycle phase, attempt to detect contamination from bacteria or other organisms or call somatic SNV's and breakpoints. See the officially supported pipelines for all these additional features. This is only provided as a lightweight setup to run the necessary steps to produce the inputs for signals.
 
 ## Outputs
 
-The final output will appear in `results/{sample}/schnapps/`. This includes an Rdata file of the schnapps object which can be opened in R and then explored interactively using schnapps. Also included is a csv file of allele specific calls per cell, qc plots and heatmaps of all the data.
+The final output will appear in `results/{sample}/signals/`. This includes an Rdata file of the  signals object which can be opened in R and then explored interactively using  signals. Also included is a csv file of allele specific calls per cell, qc plots and heatmaps of all the data.
 
 ## Running recommendations
 
@@ -57,7 +57,7 @@ Depending on the number of cells you have, the pipeline can take quite a long ti
 
 ```
 #!/bin/bash
-#BSUB -J schnapps
+#BSUB -J  signals
 #BSUB -n 1
 #BSUB -R rusage[mem=4]
 #BSUB -W 240:00
