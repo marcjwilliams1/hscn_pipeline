@@ -165,8 +165,8 @@ callhscn <- function(cn,
   message(paste0("Total number of cells after filtering diploid or misscalled ploidy: ", length(unique(cn$cell_id))))
   
   if (length(unique(cn$cell_id)) < 10){
-    stop("Number of cells is < 10, unable to run schnapps")
-    hscn <- list(data = NULL, message = "Number of cells is less than 10, unable to run schnapps")
+    stop("Number of cells is < 10, unable to run signals")
+    hscn <- list(data = NULL, message = "Number of cells is less than 10, unable to run signals")
     return(hscn)
   }
 
@@ -184,10 +184,10 @@ callhscn <- function(cn,
                                   ncores = ncores)
   
   #add library and sample IDs to qc
-  qc$sample_id <- unlist(schnapps:::get_library_labels(qc$cell_id, idx=1))
-  qc$library_id <- unlist(schnapps:::get_library_labels(qc$cell_id, idx=2))
+  qc$sample_id <- unlist(signals:::get_library_labels(qc$cell_id, idx=1))
+  qc$library_id <- unlist(signals:::get_library_labels(qc$cell_id, idx=2))
 
-  #add qc to schnapps object
+  #add qc to signals object
   hscn$qc_per_cell <- dplyr::left_join(hscn$qc_per_cell, qc, by = "cell_id")
   
   return(hscn)
@@ -210,11 +210,11 @@ callascn <- function(hscn,
 library(argparse)
 library(tidyverse)
 library(data.table)
-library(schnapps)
+library(signals)
 library(ggplot2)
 library(cowplot)
 
-message(paste0("schnapps version: ", packageVersion("schnapps")))
+message(paste0("signals version: ", packageVersion("signals")))
 
 parser <- ArgumentParser()
 
@@ -225,7 +225,7 @@ parser$add_argument("--hmmcopyqc", default=NULL, type="character", nargs = "+",
 parser$add_argument("--allelecounts", default=NULL, type="character", nargs = "+",
                     help="hmmcopy QC files")
 parser$add_argument("--ncores", default=NULL, type="integer",
-                    help="Number of cores in schnapps inference")
+                    help="Number of cores in signals inference")
 parser$add_argument("--csvfile", default=NULL, type="character",
                     help="output csvfile")
 parser$add_argument("--qccsvfile", default=NULL, type="character",
