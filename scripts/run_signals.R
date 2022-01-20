@@ -135,8 +135,8 @@ callhscn <- function(cn,
   cn_ploidy <- cn[, list(state_mean = mean(state), 
                          state_var = var(state), 
                          frac_nondiploid = sum(state != 2) / .N, 
-                         pct_cell_ploidy = sum(state == schnapps:::Mode(state)) / .N, 
-                         mode_state = schnapps:::Mode(state)), by = "cell_id"] %>% 
+                         pct_cell_ploidy = sum(state == signals:::Mode(state)) / .N, 
+                         mode_state = signals:::Mode(state)), by = "cell_id"] %>% 
     .[order(pct_cell_ploidy, decreasing = TRUE)]
   
   qc <- qc %>% 
