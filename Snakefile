@@ -13,7 +13,7 @@ rule all:
         expand("results/{sample}/hmmcopy_results/metrics.csv.gz", sample = samples),
         expand("results/{sample}/hmmcopy_results/reads.csv.gz", sample = samples),
         expand("results/{sample}/counthaps/allele_counts_perblock.csv.gz", sample = samples),
-        expand("results/{sample}/schnapps/schnapps.Rdata", sample = samples),
+        expand("results/{sample}/signals/signals.Rdata", sample = samples),
         expand("results/{sample}/counthaps/allele_counts_all.csv.gz", sample = samples),
 
 include: "rules/hmmcopy.smk"
