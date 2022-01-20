@@ -1,21 +1,21 @@
-rule schnapps:
+rule signals:
     input:
         haplotypes = "results/{sample}/counthaps/allele_counts_perblock.csv.gz",
         qc = "results/{sample}/hmmcopy_results/metrics.csv.gz",
         hmmcopy = "results/{sample}/hmmcopy_results/reads.csv.gz"
     output:
-        qc = "results/{sample}/schnapps/qc.csv.gz",
-        qcplot = report("results/{sample}/schnapps/qc.png", category = "QC plot"),
-        csv = "results/{sample}/schnapps/schnapps.csv.gz",
-        heatmap = report("results/{sample}/schnapps/heatmap.png", category = "Heatmaps"),
-        heatmapraw = report("results/{sample}/schnapps/heatmapraw.png", category = "Heatmaps Raw"),
-        rdata = "results/{sample}/schnapps/schnapps.Rdata"
+        qc = "results/{sample}/signals/qc.csv.gz",
+        qcplot = report("results/{sample}/signals/qc.png", category = "QC plot"),
+        csv = "results/{sample}/signals/signals.csv.gz",
+        heatmap = report("results/{sample}/signals/heatmap.png", category = "Heatmaps"),
+        heatmapraw = report("results/{sample}/signals/heatmapraw.png", category = "Heatmaps Raw"),
+        rdata = "results/{sample}/signals/signals.Rdata"
     threads: 10
     resources: mem_mb=lambda wildcards, attempt: attempt * 1024 * 5
     params:
-        mincells=config["schnapps"]["mincells"],
-        qualfilter=config["schnapps"]["qualfilter"]
-    singularity: "docker://marcjwilliams1/schnapps:latest"
+        mincells=config["signals"]["mincells"],
+        qualfilter=config["signals"]["qualfilter"]
+    singularity: "docker://marcjwilliams1/signals:latest"
     shell:
         """
         Rscript scripts/run_schnapps.R  \
