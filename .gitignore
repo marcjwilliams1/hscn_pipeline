@@ -7,3 +7,5 @@ demultiplex10X/logs/
 demultiplex10X/results/
 hmmcopy_wigfiles/
 refdata/
+tmp/
+.ipynb_checkpoints/
