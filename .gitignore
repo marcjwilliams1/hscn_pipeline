@@ -1,3 +1,4 @@
 test_accuracy.R
 testdata/
 .snakemake/
+results/
