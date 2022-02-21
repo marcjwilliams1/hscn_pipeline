@@ -2,3 +2,6 @@ test_accuracy.R
 testdata/
 .snakemake/
 results/
+logs/
+demultiplex10X/logs/
+demultiplex10X/results/
