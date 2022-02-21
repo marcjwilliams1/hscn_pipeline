@@ -62,24 +62,7 @@ rule runhmmcopy:
         s=config["hmmcopy"]["s"],
         multiplier=config["hmmcopy"]["multipliers"],
     singularity: "docker://quay.io/singlecellpipeline/single_cell_pipeline_hmmcopy:v0.8.9"
-    shell:
-        """
-        mkdir -p {output[0]}
-        Rscript scripts/run_hmmcopy.R --corrected_data={input[0]} \
-                                      --outdir={output[0]} \
-                                      --sample_id={wildcards.cell_id} \
-                                      --param_str={params.strength} \
-                                      --param_e={params.e} \
-                                      --param_mu={params.mu} \
-                                      --param_l={params.lambdap} \
-                                      --param_nu={params.nu} \
-                                      --param_k={params.kappa} \
-                                      --param_m={params.m} \
-                                      --param_eta={params.eta} \
-                                      --param_g={params.g} \
-                                      --param_s={params.s} \
-                                      --param_multiplier={params.multiplier}
-        """
+    script: "../scripts/run_hmmcopy.R"
 
 rule mvhmmcopy:
     input:

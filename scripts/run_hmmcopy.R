@@ -2,7 +2,6 @@
 
 library(data.table)
 
-
 suppressPackageStartupMessages(library("getopt"))
 suppressPackageStartupMessages(library("HMMcopy"))
 suppressPackageStartupMessages(library("plyr"))
@@ -123,7 +122,7 @@ run_hmmcopy <- function(cell, corrected_reads_data, param, outdir, multipliers, 
             out_metrics <- file.path(modal_output, "metrics.csv")
 
             err <- "Low coverage sample results in loess regression failure, unable to correct and segment"
-            error_exit_clean(check.samp.corrected, chromosomes, opt$sample_id, out_reads, out_segs, out_params, out_metrics, VAL, err)
+            error_exit_clean(check.samp.corrected, chromosomes, cell, out_reads, out_segs, out_params, out_metrics, VAL, err)
         }
 
         #create auto ploidy dummy output
@@ -136,7 +135,7 @@ run_hmmcopy <- function(cell, corrected_reads_data, param, outdir, multipliers, 
         out_metrics <- file.path(modal_output, "metrics.csv")
 
         err <- "Low coverage sample results in loess regression failure, unable to correct and segment"
-        error_exit_clean(check.samp.corrected, chromosomes, opt$sample_id, out_reads, out_segs, out_params, out_metrics, VAL, err)
+        error_exit_clean(check.samp.corrected, chromosomes, cell, out_reads, out_segs, out_params, out_metrics, VAL, err)
 
         quit()
 
@@ -240,10 +239,10 @@ run_hmmcopy <- function(cell, corrected_reads_data, param, outdir, multipliers, 
         df.params <- format_parameter_table(samp.segmented, new.params)
 
         # add cellid
-        df.params$cell_id <- opt$sample_id
-        test.corrected$cell_id <- opt$sample_id
-        modal_seg$cell_id <- opt$sample_id
-        mstats$cell_id <- opt$sample_id
+        df.params$cell_id <- cell
+        test.corrected$cell_id <- cell
+        modal_seg$cell_id <- cell
+        mstats$cell_id <- cell
 
         # rename space col in reads
         test.corrected <- as.data.frame(test.corrected)
@@ -276,6 +275,14 @@ run_hmmcopy <- function(cell, corrected_reads_data, param, outdir, multipliers, 
     if (length(pick) > 1){
         pick <- pick[1]
     }
+    
+    x1 <- seg.best$scaledpenalty
+    names(x1) <- paste0("scaledpenalty_m", seg.best$VAL)
+    x1 <- as.data.frame(t(x1))
+    x1$first_multiplier <- which.min(seg.best$scaledpenalty)
+    x1$second_multiplier <- which(seg.best$scaledpenalty == sort(seg.best$scaledpenalty)[2])
+    x1$first_to_second_penalty_ratio <- x1[[paste0("scaledpenalty_m", x1$first_multiplier)]] /
+      x1[[paste0("scaledpenalty_m", x1$second_multiplier)]]
 
     auto_ploidy.reads <- best.segmented[[pick]]
     write.table(auto_ploidy.reads, sep = ",", quote = FALSE, row.names = FALSE, file = file.path(auto_output, "reads.csv"))
@@ -284,6 +291,7 @@ run_hmmcopy <- function(cell, corrected_reads_data, param, outdir, multipliers, 
     write.table(auto_ploidy.segs, sep = ",", quote = FALSE, row.names = FALSE, file = file.path(auto_output, "segs.csv"))
 
     auto_ploidy.metrics <- best.metrics[[pick]]
+    auto_ploidy.metrics <- cbind(auto_ploidy.metrics, x1)
     write.table(auto_ploidy.metrics, sep = ",", quote = FALSE, row.names = FALSE, file = file.path(auto_output, "metrics.csv"))
 
     auto_ploidy.params <- best.params[[pick]]
@@ -334,16 +342,22 @@ spec = matrix(c(
                 "param_multiplier",      "mult",    2, "character",    "multiplier, start and end",
                 "help",         "h",    0, "logical",   "print usage"
         ), byrow=TRUE, ncol=5);
-opt = getopt(spec)
-
-if (!is.null(opt$help)) {
-    cat(getopt(spec, usage=TRUE))
-    q(status=1)
-}
-
 
 chromosomes <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y")
 
-param <- get_parameters(opt$param_str, opt$param_e, opt$param_mu, opt$param_l, opt$param_nu, opt$param_k, opt$param_m, opt$param_eta, opt$param_g, opt$param_s)
+param <- get_parameters(snakemake@params$strength, 
+                        snakemake@params$e, 
+                        snakemake@params$mu, 
+                        snakemake@params$lambdap, 
+                        snakemake@params$nu, 
+                        snakemake@params$kappa, 
+                        snakemake@params$m, 
+                        snakemake@params$eta, 
+                        snakemake@params$g, 
+                        snakemake@params$s)
 
-run_hmmcopy(opt$sample_id, opt$corrected_data, param, opt$outdir, opt$param_multiplier)
+run_hmmcopy(snakemake@wildcards$cell_id, 
+            snakemake@input[[1]], 
+            param, 
+            snakemake@output$celldir, 
+            snakemake@params$multiplier)
